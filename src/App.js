@@ -8,7 +8,7 @@ import { API_BASE_URL } from './config/host-config';
 export const BASE_URL = API_BASE_URL + '/api/main';
 
 const App = () => {
-
+    
 };
 
 export default App;

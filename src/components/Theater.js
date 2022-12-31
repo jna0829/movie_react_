@@ -1,4 +1,4 @@
-import React, {  useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import '../css/Theater.css';
 import theaterImg from '../img/theater.jpg';
 // import { Link } from "react-router-dom";
@@ -8,66 +8,85 @@ export const BASE_URL = API_BASE_URL + '/api/theater';
 
 const Theater = () => {
 
-    const requestLocation = e => {
+    // const requestLocation = e => {
 
-        console.log('클릭한지역:', e.target.dataset.loc);
+    //     console.log('클릭한지역:', e.target.dataset.loc);
 
-        // 지역 목록 가져오기
-        fetch(`${BASE_URL}/${e.target.dataset.loc}`,{
-            method: 'GET'
-        })
-        .then(res => res.json())
-        .then(json => {
-            console.log(json);
-        });
-    }
+    //     // 지역 목록 가져오기
+    //     fetch(`${BASE_URL}/${e.target.dataset.loc}`,{
+    //         method: 'GET'
+    //     })
+    //     .then(res => res.json())
+    //     .then(json => {
+    //         console.log(json);
+    //     });
+    // }
+    
+    const [locationId, setLocationID] = useState('Seoul');
+    const [itemList, setItemList] = useState([]);
+    const [currentMenu, setCurrentMenu] = useState({});
 
-
-    const [currentMenu, setCurrentMenu] = useState(null);
-
-    //클릭 활성화 기능
+    //지역 클릭 활성화 기능
     function activate(elem) {
-        // console.log('activate 작동!! elem: ', elem);
+        console.log('activate 작동!! elem: ', elem);
+
+        [...document.querySelector('.btn-group').children].forEach(btn => {
+            if (btn.classList.contains('menu-active')) {
+                btn.classList.remove('menu-active');
+            }
+        });
+
         elem.classList.add('menu-active');
         setCurrentMenu(elem);
+
+        setLocationID(elem.dataset.loc);
     }
 
     //클릭 비활성화 기능
-    function inactivate(elem) {
-        if (elem) elem.classList.remove('menu-active');
-    }
-
+    // function inactivate(elem) {
+    //     if (elem) elem.classList.remove('menu-active');
+    // }
 
     function clickMenuHandler(e) {
-        console.log('currentMenu: ', currentMenu);
+        // console.log('currentMenu: ', currentMenu);
         // e.stopPropagation();
-        if(currentMenu) {
-            inactivate(currentMenu);
-        }
+        // if(currentMenu) {
+        //     inactivate(currentMenu);
+        // }
         activate(e.target);
-        console.log('방금 클릭한 버튼:  ', e.target);
+        // console.log('방금 클릭한 버튼:  ', e.target);
     };
+
 
     function openMenu(e) {
 
         // console.log('openMenu 작동!!');
 
         //이벤트 시작시 className="tabContent" 숨기기
-        const tabContent = [...document.querySelectorAll('.tabContent')];
-        for (let i=0; i<tabContent.length; i++) {
-            tabContent[i].style.display='none';
-        }
+        // const tabContent = [...document.querySelectorAll('.tabContent')];
+        // for (let i=0; i<tabContent.length; i++) {
+        //     tabContent[i].style.display='none';
+        // }
 
         //클릭한 버튼 활성화
-        const tabPage = e.target.dataset.loc;
-        document.getElementById(tabPage).style.display = "block";
-
+        // const tabPage = e.target.dataset.loc;
+        // document.getElementById(tabPage).style.display = "block";
     };
 
     useEffect(() => {
+
+        // 지점 정보 불러오기
+        fetch(`${BASE_URL}/${locationId}`)
+        .then(res => res.json())
+        .then(json => {
+            console.log('theater: ', json.theaters);
+            setItemList(json.theaters);
+            }
+        );
+
         // 초기 디폴트 클릭상태로 시작
-        document.getElementById("default").click();
-    }, []);
+        // document.getElementById("default").click();
+    }, [locationId]);
 
 
     return(
@@ -77,15 +96,30 @@ const Theater = () => {
             <h1 className="title">전체극장</h1>
             <div className="theater-box">
                 <div className="btn-group" onClick={openMenu}>
-                    <button className="location" id="default" data-loc='Seoul' onClick={clickMenuHandler} >서울</button>
+                    <button className="location menu-active" data-loc='Seoul' onClick={clickMenuHandler} >서울</button>
+                    {/* 서울을 초기 디폴트로 시작하기 위해 menu-active */}
                     <button className="location" data-loc='Gyeonggi' onClick={clickMenuHandler}>경기</button>
                     <button className="location" data-loc='Gangwon' onClick={clickMenuHandler}>강원</button>
                     <button className="location" data-loc='Gyeongbuk' onClick={clickMenuHandler}>경북</button>
                     <button className="location" data-loc='Gyeongnam' onClick={clickMenuHandler}>경남</button>
                 </div>
                 
-                {/* Tab content */}
-                <div id="Seoul" className="tabContent">
+                {/* Tab Content */}
+                <div id={locationId} className="tabContent">
+                    <ul>
+                        {
+                            itemList.map(item => {
+                                return (
+                                    <li key={item.theaterID} >
+                                        <a href='#'>{item.theaterNm}점</a>
+                                    </li>
+                                );
+                            })
+                        }
+                    </ul>
+                </div>
+
+                {/* <div id="Seoul" className="tabContent">
                     <ul>
                         <li>
                             <a href="#">강변점</a>
@@ -95,7 +129,6 @@ const Theater = () => {
                         </li>
                     </ul>
                 </div>
-
                 <div id="Gyeonggi" className="tabContent">
                     <ul>
                         <li>
@@ -106,7 +139,6 @@ const Theater = () => {
                         </li>
                     </ul>
                 </div>
-
                 <div id="Gangwon" className="tabContent">
                     <ul>
                         <li>
@@ -117,7 +149,6 @@ const Theater = () => {
                         </li>
                     </ul>
                 </div>
-
                 <div id="Gyeongbuk" className="tabContent">
                     <ul>
                         <li>
@@ -128,7 +159,6 @@ const Theater = () => {
                         </li>
                     </ul>
                 </div>
-
                 <div id="Gyeongnam" className="tabContent">
                     <ul>
                         <li>
@@ -138,7 +168,7 @@ const Theater = () => {
                             <a href="#">거제점</a>
                         </li>
                     </ul>
-                </div>
+                </div> */}
 
             </div>
 
@@ -152,7 +182,7 @@ const Theater = () => {
 
             <div className="box-contents">
                 <div className="theater-info">
-                {/* 주소, 전화번호, 관안내 */}
+                    {/* 주소, 전화번호, 관안내 */}
                 </div>
             </div>
 

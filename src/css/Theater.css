@@ -59,6 +59,10 @@ h1.title {
     border-radius: 10px;
 }
 
+.theater-box .tabContent {
+    padding: 15px 10px;
+}
+
 .menu-active {
     background: rgb(179, 178, 178);
 }
