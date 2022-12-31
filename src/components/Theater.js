@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, {  useState, useEffect } from "react";
 import '../css/Theater.css';
 import theaterImg from '../img/theater.jpg';
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/host-config";
 export const BASE_URL = API_BASE_URL + '/api/theater';
@@ -23,56 +23,51 @@ const Theater = () => {
     }
 
 
-    let currentMenu;
+    const [currentMenu, setCurrentMenu] = useState(null);
 
     //클릭 활성화 기능
     function activate(elem) {
+        // console.log('activate 작동!! elem: ', elem);
         elem.classList.add('menu-active');
-        currentMenu = elem;
+        setCurrentMenu(elem);
     }
 
     //클릭 비활성화 기능
     function inactivate(elem) {
-        elem.classList.remove('menu-active');
+        if (elem) elem.classList.remove('menu-active');
     }
 
 
     function clickMenuHandler(e) {
+        console.log('currentMenu: ', currentMenu);
+        // e.stopPropagation();
         if(currentMenu) {
             inactivate(currentMenu);
         }
         activate(e.target);
-        console.log(e.target);
+        console.log('방금 클릭한 버튼:  ', e.target);
     };
 
-    // function openMenu(e) {
+    function openMenu(e) {
 
-    //     //이벤트 시작시 className="tabContent" 숨기기
-    //     const tabContent = document.querySelectorAll('.tabContent');
-    //     for (let i=0; i<tabContent.length; i++) {
-    //         tabContent[i].style.display = "none";
-    //     }
+        // console.log('openMenu 작동!!');
 
-    //     //모든 location/button 선택 제거
-    //     const location = document.querySelectorAll('.location');
-    //     for (let i=0; i<location.length; i++) {
-    //         location[i].style.remove('menu-active');
-    //     }
+        //이벤트 시작시 className="tabContent" 숨기기
+        const tabContent = [...document.querySelectorAll('.tabContent')];
+        for (let i=0; i<tabContent.length; i++) {
+            tabContent[i].style.display='none';
+        }
 
-    //     //클릭한 버튼 활성화
-    //     const tabPage = e.target.dataset.loc;
-    //     document.getElementById(tabPage).style.display = "block";
+        //클릭한 버튼 활성화
+        const tabPage = e.target.dataset.loc;
+        document.getElementById(tabPage).style.display = "block";
 
-    //     //버튼배경색 처리
-    //     e.target.style.add('menu-active') = e.target.dataset.loc;
-    // };
+    };
 
-    // // 이벤트 핸들러 바인딩
-    // const btnGroup = document.querySelector('.btn-group');
-    // btnGroup.onClick = openMenu;
-
-    // // 초기 디폴트 클릭상태로 시작
-    // document.getElementById("default").click();
+    useEffect(() => {
+        // 초기 디폴트 클릭상태로 시작
+        document.getElementById("default").click();
+    }, []);
 
 
     return(
@@ -81,7 +76,7 @@ const Theater = () => {
 
             <h1 className="title">전체극장</h1>
             <div className="theater-box">
-                <div className="btn-group">
+                <div className="btn-group" onClick={openMenu}>
                     <button className="location" id="default" data-loc='Seoul' onClick={clickMenuHandler} >서울</button>
                     <button className="location" data-loc='Gyeonggi' onClick={clickMenuHandler}>경기</button>
                     <button className="location" data-loc='Gangwon' onClick={clickMenuHandler}>강원</button>
